@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bethel Bus Trip Registration</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+
+  <!-- ══════════════════════════════════════
+       PAGE: HOME
+  ══════════════════════════════════════ -->
+  <div id="page-home" class="page active">
+    <div class="container">
+
+      <div class="site-header">
+        <p class="eyebrow">✦ Pankrono Congregation ✦</p>
+        <h1>Bethel<br/><em>Trip Registration</em></h1>
+        <p>Join us for a guided group journey to Bethel. Seats are limited — reserve yours before the bus fills up.</p>
+        <div style="margin-top:20px;">
+          <button class="btn btn-ghost" onclick="showPage('page-admin-login')">🔐 Organizer Login</button>
+        </div>
+      </div>
+
+      <!-- Seat Counter -->
+      <div class="card" style="margin-bottom:20px;">
+        <div class="seat-grid">
+          <div class="seat-stat">
+            <span class="seat-num" style="color:var(--navy);" id="stat-total">50</span>
+            <span class="seat-label">Total Seats</span>
+          </div>
+          <div class="seat-stat">
+            <span class="seat-num" style="color:var(--orange);" id="stat-reserved">0</span>
+            <span class="seat-label">Reserved</span>
+          </div>
+          <div class="seat-stat">
+            <span class="seat-num" style="color:var(--green);" id="stat-available">50</span>
+            <span class="seat-label">Available</span>
+          </div>
+        </div>
+        <div class="bar-wrap">
+          <div class="bar-meta">
+            <span>Capacity</span>
+            <span id="bar-pct">0% filled</span>
+          </div>
+          <div class="bar-track">
+            <div class="bar-fill" id="seat-bar" style="width:0%;background:var(--green);"></div>
+          </div>
+        </div>
+        <div class="bus-full-banner" id="full-banner" style="display:none;">
+          🚌 Registration Closed — Bus is Full
+        </div>
+      </div>
+
+      <!-- Registration Form -->
+      <div class="card" id="reg-form-card">
+        <div class="form-section">
+          <h2>Reserve Your Seat</h2>
+
+          <div class="field" id="f-name">
+            <label>Full Name <span class="req">*</span></label>
+            <input type="text" id="inp-name" placeholder="e.g. Jonathan Simmons" autocomplete="name"/>
+            <div class="field-error" id="err-name">Please enter your full name.</div>
+          </div>
+
+          <div class="field" id="f-phone">
+            <label>Phone Number <span class="req">*</span></label>
+            <input type="tel" id="inp-phone" placeholder="e.g. (555) 123-4567" autocomplete="tel"/>
+            <div class="field-error" id="err-phone">Please enter a valid phone number.</div>
+          </div>
+
+          <div class="field" id="f-congregation">
+            <label>Congregation <span class="opt">(optional)</span></label>
+            <select id="inp-congregation-select" onchange="handleCongregationChange()">
+              <option value="">Select congregation</option>
+              <option value="Pankrono Congregation">Pankrono Congregation</option>
+              <option value="other">Other</option>
+            </select>
+            <div id="cong-other-wrap" style="display:none; margin-top:8px;">
+              <input type="text" id="inp-congregation-other" placeholder="Please specify congregation"/>
+            </div>
+            <div class="field-error" id="err-congregation">Please specify congregation.</div>
+          </div>
+
+          <div class="field" id="f-seats">
+            <label>Seats to Reserve <span class="req">*</span></label>
+            <select id="inp-seats">
+              <option value="">— select —</option>
+            </select>
+            <div class="field-error" id="err-seats">Please select number of seats.</div>
+          </div>
+
+          <div class="field">
+            <label>Additional Notes <span class="opt">(optional)</span></label>
+            <textarea id="inp-notes" placeholder="Special requirements, questions, etc."></textarea>
+          </div>
+
+          <button class="btn btn-primary" id="submit-btn" onclick="handleSubmit()">
+            🚌 Reserve My Seat
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════
+       PAGE: SUCCESS
+  ══════════════════════════════════════ -->
+  <div id="page-success" class="page">
+    <div class="container" style="max-width:520px;">
+      <div class="card">
+        <div class="card-body" style="text-align:center; padding-top:40px; padding-bottom:40px;">
+          <div class="success-icon">✅</div>
+          <h1 style="font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:700;color:var(--navy);margin-bottom:10px;">
+            Registration Successful!
+          </h1>
+          <p style="color:var(--slate);font-size:15px;line-height:1.7;margin-bottom:28px;">
+            Your seats have been reserved for the Bethel trip.<br/>We look forward to traveling with you!
+          </p>
+          <div class="confirm-box" id="confirm-details"></div>
+          <button class="btn btn-primary" onclick="showPage('page-home')">← Back to Registration</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════
+       PAGE: ADMIN LOGIN
+  ══════════════════════════════════════ -->
+  <div id="page-admin-login" class="page">
+    <div class="login-wrap">
+      <div class="login-card">
+        <div class="login-card-top">
+          <div class="icon">🔐</div>
+          <h2>Admin Access</h2>
+          <p>Bethel Bus Trip — Organizer Portal</p>
+        </div>
+        <div class="login-card-body">
+          <div class="login-error" id="login-error">Invalid username or password.</div>
+          <div class="field" style="margin-bottom:16px;">
+            <label>Username</label>
+            <input type="text" id="inp-user" placeholder="Username" autocomplete="username"/>
+          </div>
+          <div class="field" style="margin-bottom:20px;">
+            <label>Password</label>
+            <input type="password" id="inp-pass" placeholder="Password" autocomplete="current-password"
+              onkeydown="if(event.key==='Enter') handleLogin()"/>
+          </div>
+          <button class="btn btn-primary" onclick="handleLogin()">Login to Dashboard</button>
+          <div style="text-align:center;margin-top:16px;">
+            <button class="back-link" onclick="showPage('page-home')">← Back to Registration</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════
+       PAGE: ADMIN DASHBOARD
+  ══════════════════════════════════════ -->
+  <div id="page-admin" class="page">
+    <div class="topbar">
+      <div class="topbar-title">Bethel <span>Admin Dashboard</span></div>
+      <div class="topbar-actions">
+        <button class="btn btn-outline" style="color:rgba(255,255,255,0.85);border-color:rgba(255,255,255,0.3);"
+          onclick="showPage('page-home')">View Site</button>
+        <button class="btn btn-outline" style="color:var(--gold-light);border-color:rgba(200,168,75,0.5);"
+          onclick="exportCSV()">⬇ Export CSV</button>
+        <button class="btn-danger-sm" style="padding:8px 16px;font-size:13px;"
+          onclick="handleLogout()">Logout</button>
+      </div>
+    </div>
+
+    <div class="container-wide">
+      <div class="stats-grid" id="admin-stats"></div>
+
+      <div class="card" style="margin-bottom:20px;">
+        <div class="bar-wrap" style="padding:18px 24px;">
+          <div class="bar-meta">
+            <span style="font-weight:600;color:var(--navy);">Capacity Overview</span>
+            <span id="admin-bar-pct">—</span>
+          </div>
+          <div class="bar-track" style="height:14px;">
+            <div class="bar-fill" id="admin-seat-bar" style="width:0%;background:var(--green);"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h2 id="table-heading">Registrations</h2>
+        </div>
+        <div class="table-wrap" id="admin-table-wrap"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       Firebase SDK (v10 modular) — single init
+  ══════════════════════════════════════ -->
+  <script type="module">
+    import { initializeApp }  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import * as firestore     from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey:            "AIzaSyBxcPdsqTqN3Cx-nZVXZdfeCbk6Ndlh8GU",
+      authDomain:        "bethel-trip.firebaseapp.com",
+      projectId:         "bethel-trip",
+      storageBucket:     "bethel-trip.firebasestorage.app",
+      messagingSenderId: "294179593361",
+      appId:             "1:294179593361:web:9bf8c88fcb86fd05d3b330",
+      measurementId:     "G-XP9GH9TBKZ"
+    };
+
+    const app = initializeApp(firebaseConfig);
+
+    // Expose to global scope so non-module scripts can access them
+    window.firebase_app       = { initializeApp };
+    window.firebase_firestore = firestore;
+    window._firestoreDb       = firestore.getFirestore(app);
+
+    window.dispatchEvent(new Event('firebase-ready'));
+  </script>
+
+  <!-- App scripts — loaded sequentially after Firebase is ready -->
+  <script>
+    window.addEventListener('firebase-ready', () => {
+      const load = src => new Promise(res => {
+        const s = document.createElement('script');
+        s.src = src; s.onload = res; document.body.appendChild(s);
+      });
+      (async () => {
+        await load('js/store.js');
+        await load('js/utils.js');
+        await load('js/firebase.js');
+        await load('js/home.js');
+        await load('js/admin.js');
+        await load('js/app.js');
+      })();
+    });
+  </script>
+
+</body>
+</html>
